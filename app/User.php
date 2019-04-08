@@ -24,7 +24,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      *
      * @var array
      */
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'reset_pass'];
 
     public $timestamps = false;
 

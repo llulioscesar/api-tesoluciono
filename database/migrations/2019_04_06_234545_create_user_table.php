@@ -19,6 +19,7 @@ class CreateUserTable extends Migration
             $table->char('username', 55)->unique();
             $table->char('email',55)->unique();
             $table->char('password',255);
+            $table->boolean('reset_pass')->default(false);
         });
     }
 

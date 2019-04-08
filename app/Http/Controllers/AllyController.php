@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 
 use App\Ally;
+use function GuzzleHttp\Promise\all;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -25,8 +26,58 @@ class AllyController extends Controller
         return response()->json($ally);
     }
 
-    public function update(Request $req){
+    public function update(Request $req, $id){
+        $ally = Ally::find($id);
+        if($ally != null){
 
+            $json = $req->json()->all();
+
+            if(array_key_exists('name', $json)){
+                $ally->name = $json['name'];
+            }
+            if(array_key_exists('logo', $json)){
+                $ally->logo = $json['logo'];
+            }
+            if(array_key_exists('enable', $json)){
+                $ally->enable = $json['enable'];
+            }
+            if(array_key_exists('category_key', $json)){
+                $this->validate($req,[
+                    "category_id" => [
+                        'required',
+                        Rule::exists('category', 'id')
+                    ]
+                ]);
+                $ally->category_id = $json['category_id'];
+            }
+            $ally->save();
+            return response()->json($ally);
+        }
+
+        return response()->json([
+            "error" => [
+                "message" => "El aliado no existe"
+            ]
+        ], 500);
+    }
+
+    public function delete($id)
+    {
+        $ally = Ally::find($id);
+        if ($ally != null) {
+            $ally->delete();
+            return response()->json(["success" => "Aliado eliminado"]);
+        }
+        return response()->json([
+            "error" => [
+                "message" => "El aliado no existe"
+            ]
+        ],500);
+    }
+
+    public function index(){
+        $allies = Ally::all();
+        return response()->json($allies);
     }
 
     public function saveLogo(Request $req){
